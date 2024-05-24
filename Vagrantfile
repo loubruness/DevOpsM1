@@ -12,8 +12,35 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "brycekahle/ubuntu-22.04-arm64"
-  config.vm.box_version = "0.1"
+  config.vm.define "gitlab" do |gitlab|
+    gitlab.vm.box = "brycekahle/ubuntu-22.04-arm64"
+    gitlab.vm.box_version = "0.1"
+
+    gitlab.vm.network "forwarded_port", guest: 80, host: 80
+
+    gitlab.vm.network "private_network", ip: "192.168.33.10"
+
+    gitlab.vm.provision "shell", path: "setup-gitlab.sh"
+
+    gitlab.vm.provider "parallels" do |prl|
+      prl.name = "gitlab"
+      prl.memory = 4096
+    end
+  end
+
+  config.vm.define "runner" do |runner|
+    runner.vm.box = "brycekahle/ubuntu-22.04-arm64"
+    runner.vm.box_version = "0.1"
+
+    runner.vm.network "private_network", ip: "192.168.33.11"
+
+    runner.vm.provision "shell", path: "setup-runner.sh"
+
+    runner.vm.provider "parallels" do |prl|
+      prl.name = "runner"
+      prl.memory = 2048
+    end
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -25,7 +52,6 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 80, host: 80
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -35,7 +61,6 @@ Vagrant.configure("2") do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -54,8 +79,8 @@ Vagrant.configure("2") do |config|
   # If you use this you may want to enable additional shared subfolders as
   # shown above.
   # config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder "./shared_data", "/shared_data"
+  # config.vm.synced_folder ".", "/vagrant", disabled: true
+  # config.vm.synced_folder "./shared_data", "/shared_data"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -72,11 +97,6 @@ Vagrant.configure("2") do |config|
   # View the documentation for the provider you are using for more
   # information on available options.
 
-  config.vm.provider "parallels" do |prl|
-    prl.name = "vmlab1"
-    prl.memory = 4096
-  end
-
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
@@ -84,6 +104,4 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-
-  config.vm.provision "shell", path: "setup-gitlab.sh"
 end

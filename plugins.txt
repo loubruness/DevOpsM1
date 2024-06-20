@@ -1,0 +1,4 @@
+docker-workflow
+git
+slack
+ssh-slaves

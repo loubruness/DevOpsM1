@@ -1,5 +1,8 @@
-> Warning: This branch is for Apple Silicon (ARM64) machines.
+### Start command:
+```docker-compose up --build```
 
----
+### Stop command:
+```docker-compose down```
 
-The initial root password in GitLab is `076R#kN9N2-;`.
+### Find first password:
+```docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword```

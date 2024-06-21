@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'jenkins-agent'
+        }
+    }
 
     environment {
         DOCKER_HOST = 'tcp://docker:2376'

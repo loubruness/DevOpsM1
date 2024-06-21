@@ -1,4 +1,11 @@
 docker-workflow
+job-dsl
+workflow-aggregator
+pipeline-model-definition
+ws-cleanup
+workflow-cps
 git
 slack
 ssh-slaves
+credentials
+icon-shim

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   jenkins-master:
     build:
@@ -21,6 +20,27 @@ services:
       - "8080:8080"
       - "50000:50000"
 
+  jenkins-agent:
+    image: jenkins/ssh-agent:jdk17
+    container_name: jenkins-agent
+    ports:
+      - "22:22"
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDExamiFZ0JwVYcDAZ3ZUAN8RjVtrb7lFYNIBOHUNxU3JZeG/P2WXVgxxXwVhjDYaNxIeYx3QPnxv6dwhCpsBQ1+itFHqzFQn1xnCrm1H3GFexABY7xwcZRkwwU/yAGIjy77/qY57z0lsJHJqyVEgSbdpuv1Tdwde/Pru4Fwr17LpWEcZ+PfV9vR+xyRnz2Y3XlDHKENb2gjpIxEBtRcQ7huoyeEXpOoz2b6o+qoGB3MNbBqSQ8MA7CBI4Aw+hIG5Ull+duNzLeH1PYnsgh9R0wz4cUljIsc6k2pVTLOPFVnMC4vMGRqfYCHNLRNyn8IQZ59/03yxBdHsda7jQDY1iC1nOGuiEtWVFpBBb4f9zDiIzFommf8Hqk2cTZvLdz2MBcxjRnwl7KdkQm2XcSVIEcNVUPSxqZxd9iVmo/1IaxSKaKY87A8JuEwmRJy0xO5PsCmZ3xiK1DI0OP9PqiPre3kF0fK0QUDHCKSySuz8SA1yZ8Myd/IRID9rr/EDZKBHk= arthur@PC_Portable_Art
+    networks:
+      - jenkins
+    restart: always 
+
+  final-server:
+    image: ubuntu:latest
+    container_name: final-server
+    volumes:
+      - final_server_deploy:/var/www/html
+    depends_on:
+      - jenkins-master
+    networks:
+      - jenkins
+
 networks:
   jenkins:
     driver: bridge
@@ -28,3 +48,5 @@ networks:
 volumes:
   jenkins-data:
   jenkins-docker-certs:
+  final_server_deploy:
+  agent_workdir:

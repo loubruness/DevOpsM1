@@ -28,7 +28,8 @@ def slackCredentials = new StringCredentialsImpl(
                                     CredentialsScope.GLOBAL,
                                     'slack-token', // ID des credentials
                                     'Slack API token', // Description des credentials
-                                    //S//ecret.fromString(myToken)
+                                    //S zefz
+                                    //ecret.fromString(myToken)
 )
 credentials_store.addCredentials(global_domain, slackCredentials)
 credentials_store.addCredentials(global_domain, creds)

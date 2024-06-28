@@ -26,11 +26,13 @@ pipeline {
                     // Log in to your Docker registry
                     docker.withRegistry("http://${DOCKER_REGISTRY}") {
                         // Push the image to your private registry
-                        docker.image("eshopwebmvc").push()
+                        sh 'docker tag localhost:5001eshopwebmvc localhost:5001/eshopwebmvc:latest'
+                        sh 'docker push localhost:5001/eshopwebmvc:latest'
                     }
                     docker.withRegistry("http://${DOCKER_REGISTRY}") {
                         // Push the image to your private registry
-                        docker.image("eshoppublicapi").push()
+                        sh 'docker tag localhost:5001eshoppublicapi localhost:5001/eshoppublicapi:latest'
+                        sh 'docker push localhost:5001/eshoppublicapi:latest'
                     }
                 }
             }

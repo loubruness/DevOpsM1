@@ -6,6 +6,9 @@ import com.cloudbees.plugins.credentials.domains.*
 import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.*
 import hudson.plugins.sshslaves.*
+import org.jenkinsci.plugins.plaincredentials.impl.*
+import hudson.util.Secret
+
 
 
 global_domain = Domain.global()
@@ -18,4 +21,14 @@ creds = new BasicSSHUserPrivateKey(CredentialsScope.GLOBAL,
                                     '', // passphrase
                                     '') // description
 
+
+
+
+def slackCredentials = new StringCredentialsImpl(
+                                    CredentialsScope.GLOBAL,
+                                    'slack-token', // ID des credentials
+                                    'Slack API token', // Description des credentials
+                                    Secret.fromString('xoxb-7350845836756-7348539158866-9RTJTHRJl4EWWCVFSRFZF56z') // Token Slack (remplacer par votre vrai token)
+)
+credentials_store.addCredentials(global_domain, slackCredentials)
 credentials_store.addCredentials(global_domain, creds)

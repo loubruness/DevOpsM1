@@ -1,55 +1,37 @@
 pipeline {
     agent {
-        node {
+        node{
             label 'agent'
         }
     }
-
-    environment {
-        DOCKER_HOST = 'tcp://docker:2376'
-        DOCKER_CERT_PATH = '/certs/client'
-        DOCKER_TLS_VERIFY = '1'
-    }
-
+    
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build') {
             steps {
-                script {
-                    docker.build('my-app')
-                }
+                 echo "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) executed on agent '${env.NODE_NAME}'"
+
+                // Étapes de construction de votre pipeline
             }
         }
-
-        stage('Test') {
-            steps {
-                script {
-                    docker.image('my-app').inside {
-                        sh 'make test'
-                    }
-                }
-            }
-        }
-
         stage('Deploy') {
             steps {
-                script {
-                    docker.image('my-app').inside {
-                        sh 'make deploy'
-                    }
-                }
+                echo 'Deploying...'
+                // Étapes de déploiement de votre pipeline
             }
         }
     }
-
+    
     post {
         always {
-            cleanWs()
+            script {
+                currentBuild.result = currentBuild.result ?: 'SUCCESS'
+                
+                // Envoi de la notification Slack
+                slackSend color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger', message: "Pipeline ${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) on agent '${env.NODE_NAME}'"
+                
+                // Autres actions à effectuer après l'exécution de la pipeline
+                echo 'Pipeline finished!'
+            }
         }
     }
 }

@@ -23,12 +23,12 @@ creds = new BasicSSHUserPrivateKey(CredentialsScope.GLOBAL,
 
 
 
-
+myToken = System.getenv('SLACK_SECRET_TOKEN')
 def slackCredentials = new StringCredentialsImpl(
                                     CredentialsScope.GLOBAL,
                                     'slack-token', // ID des credentials
                                     'Slack API token', // Description des credentials
-                                    Secret.fromString('xoxb-7350845836756-7348539158866-9RTJTHRJl4EWWCVFSRFZF56z') // Token Slack (remplacer par votre vrai token)
+                                    //S//ecret.fromString(myToken)
 )
 credentials_store.addCredentials(global_domain, slackCredentials)
 credentials_store.addCredentials(global_domain, creds)

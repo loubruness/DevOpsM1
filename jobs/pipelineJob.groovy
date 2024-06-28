@@ -16,10 +16,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Builds the Docker image using the Dockerfile in the project root
-                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}")
-                }
+                sh 'docker compose build'
             }
         }
 

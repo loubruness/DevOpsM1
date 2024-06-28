@@ -6,7 +6,7 @@
 
 ### Start command:
 
-``docker-compose up --build``
+``docker-compose up -d``
 
 ### Stop command:
 

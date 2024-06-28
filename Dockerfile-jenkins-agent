@@ -1,0 +1,30 @@
+# Use the Jenkins SSH Agent image as the base
+FROM jenkins/ssh-agent:jdk17
+
+# Install Docker CLI in the agent container
+USER root
+RUN apt-get update && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release software-properties-common && \
+    curl -fsSL https://get.docker.com | sh
+
+# Install sudo and allow jenkins user to run commands as root
+RUN apt-get install -y sudo && \
+    echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Add jenkins user to the docker group
+# RUN groupadd -f docker && usermod -aG docker jenkins
+RUN usermod -aG docker jenkins
+RUN newgrp docker
+# RUN groupadd -g 999 docker && \
+#     usermod -aG docker jenkins
+# RUN groupadd -f docker && usermod -aG docker root
+
+# Copy the custom entrypoint script into the container
+COPY custom-entrypoint.sh /custom-entrypoint.sh
+RUN chmod 777 /custom-entrypoint.sh
+
+# Switch back to the jenkins user
+# USER jenkins
+
+# Set the custom entrypoint script to be executed
+ENTRYPOINT ["/custom-entrypoint.sh"]

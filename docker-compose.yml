@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   jenkins-master:
     build:
@@ -9,27 +9,34 @@ services:
     restart: on-failure
     networks:
       - jenkins
-    environment:
-      - DOCKER_HOST=tcp://docker:2376
-      - DOCKER_CERT_PATH=/certs/client
-      - DOCKER_TLS_VERIFY=1
+    # environment:
+    # - DOCKER_HOST=tcp://docker:2375
+    # - DOCKER_CERT_PATH=/certs/client
+    # - DOCKER_TLS_VERIFY=1
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080:8080"
       - "50000:50000"
 
   jenkins-agent:
-    image: jenkins/ssh-agent:jdk17
+    # image: jenkins/ssh-agent:jdk17
+    build:
+      context: .
+      dockerfile: Dockerfile-jenkins-agent
+    image: jenkins-agent-image
     container_name: jenkins-agent
     ports:
       - "22:22"
     environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDExamiFZ0JwVYcDAZ3ZUAN8RjVtrb7lFYNIBOHUNxU3JZeG/P2WXVgxxXwVhjDYaNxIeYx3QPnxv6dwhCpsBQ1+itFHqzFQn1xnCrm1H3GFexABY7xwcZRkwwU/yAGIjy77/qY57z0lsJHJqyVEgSbdpuv1Tdwde/Pru4Fwr17LpWEcZ+PfV9vR+xyRnz2Y3XlDHKENb2gjpIxEBtRcQ7huoyeEXpOoz2b6o+qoGB3MNbBqSQ8MA7CBI4Aw+hIG5Ull+duNzLeH1PYnsgh9R0wz4cUljIsc6k2pVTLOPFVnMC4vMGRqfYCHNLRNyn8IQZ59/03yxBdHsda7jQDY1iC1nOGuiEtWVFpBBb4f9zDiIzFommf8Hqk2cTZvLdz2MBcxjRnwl7KdkQm2XcSVIEcNVUPSxqZxd9iVmo/1IaxSKaKY87A8JuEwmRJy0xO5PsCmZ3xiK1DI0OP9PqiPre3kF0fK0QUDHCKSySuz8SA1yZ8Myd/IRID9rr/EDZKBHk= arthur@PC_Portable_Art
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC+2betQkuPglcpXHrdXeZg0OVmmauahhuuTHxqV/copb6NPUliuJwleUuaMb20LaITjxgHTwT1J9mtDmnE2jQ48IjTlkhIBf6A9H+nt6Y54OY/AEXYGr8Mex1kK7qNcIyBGFOerRsEU+1cmgpo00GyoJWVg/gjtCHtkgUpZITIarwd11XkqE86RxKEaPIb1Nwd/nEqYxFzxzCXm2ZeFpCoa0cC0MrdWlS3wg8FcVH7q5uV5nzBpZ2hFvK8zEt4ochrIOaecNRHBYoSuPIuSKvs7bMWVZbfnYNamWz976X6ZEHPQgKnAqqF9F8245z1+UyKtUXHAYevSTeCxdhn2YdRRjxo0lwpzUaVmpUF2v2drMJJnlbds2UwkdbOKSf68x+GwxtwOb4B8aDJ5eRYeDP1qZTnw8/EBxykdSPVdbVv2KNVrZDUNesEgzcnorAFKMBCZOsLIMhRIfwzuTyxlrUlaNKzutwuA3W9RTH9iDqlY+N0ahpop/jsW84/0eyDiE/0/8aVpyRB9PgJIOLwzkTOqsoXzHI+KDukw3UOEY+C9B5vJptTcBX9DGCejWfrJ2HVIUjf7ZJ2VZDOoz0h1UXCSOu9dxAgRT8TExwMizzIc8VlAPj1/ZWPP7AUAty6Xy5TIds1PvcTXhyC6J2dgyIpe7iK1+rxUi087+DjsW+fXQ== hugop
     networks:
       - jenkins
-    restart: always 
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   final-server:
     image: ubuntu:latest
@@ -38,6 +45,17 @@ services:
       - final_server_deploy:/var/www/html
     depends_on:
       - jenkins-master
+    networks:
+      - jenkins
+
+  registry: # Private registry to host the docker images we build and pull them on the deployment server
+    image: registry:2
+    container_name: private_registry
+    ports:
+      - "5001:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+    restart: always
     networks:
       - jenkins
 
@@ -50,3 +68,4 @@ volumes:
   jenkins-docker-certs:
   final_server_deploy:
   agent_workdir:
+  registry_data:

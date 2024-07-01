@@ -20,11 +20,11 @@ RUN newgrp docker
 # RUN groupadd -f docker && usermod -aG docker root
 
 # Copy the custom entrypoint script into the container
-COPY custom-entrypoint.sh /custom-entrypoint.sh
-RUN chmod 777 /custom-entrypoint.sh
+# COPY custom-entrypoint.sh /custom-entrypoint.sh
+# RUN chmod 777 /custom-entrypoint.sh
 
-# Switch back to the jenkins user
-# USER jenkins
+# # Switch back to the jenkins user
+# # USER jenkins
 
-# Set the custom entrypoint script to be executed
-ENTRYPOINT ["/custom-entrypoint.sh"]
+# # Set the custom entrypoint script to be executed
+# ENTRYPOINT ["/custom-entrypoint.sh"]

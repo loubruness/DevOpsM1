@@ -2,11 +2,20 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'localhost:5000' // Change this to your private registry's address
+        DOCKER_REGISTRY = 'localhost:5001' // Change this to your private registry's address
         IMAGE_NAME = 'my-project-image' // Change this to your desired image name
     }
 
     stages {
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Adjust the permissions of the Docker socket
+                    sh 'sudo chmod 666 /var/run/docker.sock'
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 // Checks out the project source code
@@ -16,10 +25,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Builds the Docker image using the Dockerfile in the project root
-                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}")
-                }
+                sh 'docker compose build'
             }
         }
 
@@ -27,9 +33,15 @@ pipeline {
             steps {
                 script {
                     // Log in to your Docker registry
-                    docker.withRegistry("http://${DOCKER_REGISTRY}", 'registry-credentials-id') {
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
                         // Push the image to your private registry
-                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}").push()
+                        sh 'docker tag localhost:5001eshopwebmvc localhost:5001/eshopwebmvc:latest'
+                        sh 'docker push localhost:5001/eshopwebmvc:latest'
+                    }
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        // Push the image to your private registry
+                        sh 'docker tag localhost:5001eshoppublicapi localhost:5001/eshoppublicapi:latest'
+                        sh 'docker push localhost:5001/eshoppublicapi:latest'
                     }
                 }
             }

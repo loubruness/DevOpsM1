@@ -1,4 +1,5 @@
-version: "3.8"
+version: '3.9'
+
 services:
   jenkins-master:
     build:
@@ -9,10 +10,6 @@ services:
     restart: on-failure
     networks:
       - jenkins
-    # environment:
-    # - DOCKER_HOST=tcp://docker:2375
-    # - DOCKER_CERT_PATH=/certs/client
-    # - DOCKER_TLS_VERIFY=1
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
@@ -22,7 +19,6 @@ services:
       - "50000:50000"
 
   jenkins-agent:
-    # image: jenkins/ssh-agent:jdk17
     build:
       context: .
       dockerfile: Dockerfile-jenkins-agent
@@ -31,7 +27,7 @@ services:
     ports:
       - "22:22"
     environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC+2betQkuPglcpXHrdXeZg0OVmmauahhuuTHxqV/copb6NPUliuJwleUuaMb20LaITjxgHTwT1J9mtDmnE2jQ48IjTlkhIBf6A9H+nt6Y54OY/AEXYGr8Mex1kK7qNcIyBGFOerRsEU+1cmgpo00GyoJWVg/gjtCHtkgUpZITIarwd11XkqE86RxKEaPIb1Nwd/nEqYxFzxzCXm2ZeFpCoa0cC0MrdWlS3wg8FcVH7q5uV5nzBpZ2hFvK8zEt4ochrIOaecNRHBYoSuPIuSKvs7bMWVZbfnYNamWz976X6ZEHPQgKnAqqF9F8245z1+UyKtUXHAYevSTeCxdhn2YdRRjxo0lwpzUaVmpUF2v2drMJJnlbds2UwkdbOKSf68x+GwxtwOb4B8aDJ5eRYeDP1qZTnw8/EBxykdSPVdbVv2KNVrZDUNesEgzcnorAFKMBCZOsLIMhRIfwzuTyxlrUlaNKzutwuA3W9RTH9iDqlY+N0ahpop/jsW84/0eyDiE/0/8aVpyRB9PgJIOLwzkTOqsoXzHI+KDukw3UOEY+C9B5vJptTcBX9DGCejWfrJ2HVIUjf7ZJ2VZDOoz0h1UXCSOu9dxAgRT8TExwMizzIc8VlAPj1/ZWPP7AUAty6Xy5TIds1PvcTXhyC6J2dgyIpe7iK1+rxUi087+DjsW+fXQ== hugop
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDV/9LSE2plFt0H3AFMlRPKlS0dXEnBeq8lHl/jy/yHxu1SsFoUwYTLpbwoOmiWI1UxF7R/KDU4sy7mNJsS+Q1UMsAI5mdUI88+n3SpL3VDrsj5pp7PjQfLu2zQNMB4tJROr+0Pj9Fu977m+IdzyIBcyQd22WG6SQMYOahrnvL2N3INx+F/4pE7RjCarv0BryFfk85kVkRtFil3+Bd2rV9XZK3rGhMcRB1ovortTWQLFkiyEEl0TP+TCI6+ikXVmsXrNoY3oj5YENSiyw1Tof9n9rtq+vhmVlpH8KGkj7tJUgRM1iIP+f62jzrk8iMaZE8v40xcoPTF5RO2WTWQ4yGoVpeNtQewJCN3i/qR2HxzpywO/xhOCq35xAVkPSTdARHnzUHApcxHRNe6FYnkgdFPKgvRn4hKf4hWhbu2wxP62x8rTDkXwPX23jYNSuLBZIYDSNlkpSdjSWwaw/X80VislIsgNs+GYREddrQHeHXvgL27DV5IFjNW3AWr8DW6M5U= pauli@DESKTOP-PRG4B1I
     networks:
       - jenkins
     restart: always
@@ -48,7 +44,7 @@ services:
     networks:
       - jenkins
 
-  registry: # Private registry to host the docker images we build and pull them on the deployment server
+  registry:
     image: registry:2
     container_name: private_registry
     ports:

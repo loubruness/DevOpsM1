@@ -15,16 +15,3 @@ RUN apt-get install -y sudo && \
 # RUN groupadd -f docker && usermod -aG docker jenkins
 RUN usermod -aG docker jenkins
 RUN newgrp docker
-# RUN groupadd -g 999 docker && \
-#     usermod -aG docker jenkins
-# RUN groupadd -f docker && usermod -aG docker root
-
-# Copy the custom entrypoint script into the container
-# COPY custom-entrypoint.sh /custom-entrypoint.sh
-# RUN chmod 777 /custom-entrypoint.sh
-
-# # Switch back to the jenkins user
-# # USER jenkins
-
-# # Set the custom entrypoint script to be executed
-# ENTRYPOINT ["/custom-entrypoint.sh"]

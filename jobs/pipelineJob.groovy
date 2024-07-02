@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'agent'
+        }
+    }
 
     environment {
         DOCKER_REGISTRY = 'localhost:5001' // Change this to your private registry's address
@@ -12,6 +16,7 @@ pipeline {
                 script {
                     // Adjust the permissions of the Docker socket
                     sh 'sudo chmod 666 /var/run/docker.sock'
+                    slackSend color: 'good', message: "Pipeline started: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) on agent '${env.NODE_NAME}'"
                 }
             }
         }
@@ -20,12 +25,18 @@ pipeline {
             steps {
                 // Checks out the project source code
                 git url: 'https://github.com/dotnet-architecture/eShopOnWeb.git', branch: 'main'
+                script{
+                    slackSend color: 'good', message: "Checkout completed"
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 sh 'docker compose build'
+                script{
+                    slackSend color: 'good', message: "Docker image built"
+                }
             }
         }
 
@@ -38,17 +49,21 @@ pipeline {
                         sh 'docker tag localhost:5001eshopwebmvc localhost:5001/eshopwebmvc:latest'
                         sh 'docker push localhost:5001/eshopwebmvc:latest'
                     }
+                    slackSend color: 'good', message: "Image pushed to registry"
+
                     docker.withRegistry("http://${DOCKER_REGISTRY}") {
                         // Push the image to your private registry
                         sh 'docker tag localhost:5001eshoppublicapi localhost:5001/eshoppublicapi:latest'
                         sh 'docker push localhost:5001/eshoppublicapi:latest'
                     }
+
+                    slackSend color: 'good', message: "Image pushed to registry"
                 }
             }
         }
     }
     
-    post {
+    post { // 
         always {
             script {
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'

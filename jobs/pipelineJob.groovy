@@ -1,22 +1,49 @@
 pipeline {
-    agent {
-        node{
-            label 'agent'
-        }
-    }
-    
-    stages {
-        stage('Build') {
-            steps {
-                 echo "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) executed on agent '${env.NODE_NAME}'"
+    agent any
 
-                // Étapes de construction de votre pipeline
+    environment {
+        DOCKER_REGISTRY = 'localhost:5001' // Change this to your private registry's address
+        IMAGE_NAME = 'my-project-image' // Change this to your desired image name
+    }
+
+    stages {
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Adjust the permissions of the Docker socket
+                    sh 'sudo chmod 666 /var/run/docker.sock'
+                }
             }
         }
-        stage('Deploy') {
+
+        stage('Checkout') {
             steps {
-                echo 'Deploying...'
-                // Étapes de déploiement de votre pipeline
+                // Checks out the project source code
+                git url: 'https://github.com/dotnet-architecture/eShopOnWeb.git', branch: 'main'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker compose build'
+            }
+        }
+
+        stage('Push Image to Registry') {
+            steps {
+                script {
+                    // Log in to your Docker registry
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        // Push the image to your private registry
+                        sh 'docker tag localhost:5001eshopwebmvc localhost:5001/eshopwebmvc:latest'
+                        sh 'docker push localhost:5001/eshopwebmvc:latest'
+                    }
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        // Push the image to your private registry
+                        sh 'docker tag localhost:5001eshoppublicapi localhost:5001/eshoppublicapi:latest'
+                        sh 'docker push localhost:5001/eshoppublicapi:latest'
+                    }
+                }
             }
         }
     }
@@ -34,4 +61,5 @@ pipeline {
             }
         }
     }
+}
 }

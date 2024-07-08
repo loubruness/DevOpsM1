@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'localhost:5001'
-        DOCKER_PASSWORD = '$Pa82!Da98' // Escaping special characters with single quotes
     }
 
     stages {
@@ -72,9 +71,6 @@ pipeline {
                 script {
                     // Copy the Docker Compose file to final-server
                     sh 'docker cp docker-compose.yml final-server:/var/www/html/docker-compose.yml'
-                    
-                    // Using single quotes around password to handle special characters
-                    sh 'docker exec final-server docker login -u paulinedav -p \'"$DOCKER_PASSWORD"\' http://localhost:5001'
 
                     // Run Docker Compose commands inside final-server
                     sh '''

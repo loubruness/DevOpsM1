@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'localhost:5001' // Change this to your private registry's address
-        IMAGE_NAME = 'my-project-image' // Change this to your desired image name
     }
 
     stages {
@@ -58,6 +57,16 @@ pipeline {
                     }
 
                     slackSend color: 'good', message: "Image pushed to registry"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        // Deploy the application using Docker Compose
+                        sh 'docker compose up -d'
+                    }
                 }
             }
         }

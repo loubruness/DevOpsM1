@@ -32,24 +32,24 @@ pipeline {
             }
         }
 
-        stage('Test Project') {
-            steps {
-                script {
-                    def sdkImage = 'mcr.microsoft.com/dotnet/sdk:8.0'
-                    def exitCode = sh(script: "docker run -v /var/jenkins_temp/my-pipeline-job:/app --name test-container ${sdkImage} /bin/sh -c 'dotnet test /app/eShopOnWeb.sln'", returnStatus: true)
-                    if (exitCode != 0) {
-                        currentBuild.result = 'FAILURE'
-                        error 'Tests failed. Aborting build.'
-                    }
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh 'docker compose build'
                 script{
                     slackSend color: 'good', message: "Docker image built"
+                }
+            }
+        }
+
+        stage('Test Project') {
+            steps {
+                script {
+                    def sdkImage = 'mcr.microsoft.com/dotnet/sdk:8.0'
+                    def exitCode = sh(script: "docker run jenkins_temp/my-pipeline-job:/app --name test-container ${sdkImage} /bin/sh -c 'dotnet test /app/eShopOnWeb.sln'", returnStatus: true)
+                    if (exitCode != 0) {
+                        currentBuild.result = 'FAILURE'
+                        error 'Tests failed. Aborting build.'
+                    }
                 }
             }
         }

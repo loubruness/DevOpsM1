@@ -29,23 +29,13 @@ services:
     ports:
       - "22:22"
     environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC+2betQkuPglcpXHrdXeZg0OVmmauahhuuTHxqV/copb6NPUliuJwleUuaMb20LaITjxgHTwT1J9mtDmnE2jQ48IjTlkhIBf6A9H+nt6Y54OY/AEXYGr8Mex1kK7qNcIyBGFOerRsEU+1cmgpo00GyoJWVg/gjtCHtkgUpZITIarwd11XkqE86RxKEaPIb1Nwd/nEqYxFzxzCXm2ZeFpCoa0cC0MrdWlS3wg8FcVH7q5uV5nzBpZ2hFvK8zEt4ochrIOaecNRHBYoSuPIuSKvs7bMWVZbfnYNamWz976X6ZEHPQgKnAqqF9F8245z1+UyKtUXHAYevSTeCxdhn2YdRRjxo0lwpzUaVmpUF2v2drMJJnlbds2UwkdbOKSf68x+GwxtwOb4B8aDJ5eRYeDP1qZTnw8/EBxykdSPVdbVv2KNVrZDUNesEgzcnorAFKMBCZOsLIMhRIfwzuTyxlrUlaNKzutwuA3W9RTH9iDqlY+N0ahpop/jsW84/0eyDiE/0/8aVpyRB9PgJIOLwzkTOqsoXzHI+KDukw3UOEY+C9B5vJptTcBX9DGCejWfrJ2HVIUjf7ZJ2VZDOoz0h1UXCSOu9dxAgRT8TExwMizzIc8VlAPj1/ZWPP7AUAty6Xy5TIds1PvcTXhyC6J2dgyIpe7iK1+rxUi087+DjsW+fXQ== hugop
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDjh9iBvqQnLaySlV+m3p70CgJJl/XeAA5dGKsbdNrRZTRRGwag6zs2tOG3iMqsMPlEe7UMqvH9/rQnd/vyg124hcpCmdg8AXDnDS/LQuCRhIqMosfwOunDH+SJcDdqyIWsmkRS4Lib8+hRh20tW5orTFIlpy5fockVNGV1t9E1dB8zKfK4ljlTTv6+r7LCyVq0gpk4C3CNmRBre0cyKuptrLiHxR7Qo2vFtlzRfk3cw/VEEIXh2TX84AegIGJbfT4994dBAYNg53fjHeDTvQ08kp/UKjnCQnN3VW9Td41XPWDX88SViADZjtTQ8PsrF14lN9mhj1RYPDWWpKasdYgHrfl3AQuvA4iTRV8ku6uYhQYtmFSf6NbGnTKGtxlwTas0HjW/76uqo2/3EYFKnBHOTsQGXRMq8CCiJ1zK1BSdRxE9bJUUBFsPCijUdOZMXWoQxAD9C4aa35iimV8VUJjmHaDLa3TNpKHTbPLTxXQwk//zloCF0zpjLwut1WPxJmE= arthur@PC_Portable_Art
     networks:
       - jenkins
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/jenkins_temp:/home/jenkins/workspace
-
-  final-server:
-    image: ubuntu:latest
-    container_name: final-server
-    volumes:
-      - final_server_deploy:/var/www/html
-    depends_on:
-      - jenkins-master
-    networks:
-      - jenkins
+      - jenkins_temp:/home/jenkins/workspace
 
   registry:
     image: registry:2
@@ -65,6 +55,6 @@ networks:
 volumes:
   jenkins-data:
   jenkins-docker-certs:
-  final_server_deploy:
   agent_workdir:
+  jenkins_temp:
   registry_data:

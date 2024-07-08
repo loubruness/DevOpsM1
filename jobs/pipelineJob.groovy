@@ -24,9 +24,23 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checks out the project source code
-                git url: 'https://github.com/dotnet-architecture/eShopOnWeb.git', branch: 'main'
+                git url: 'https://github.com/dotnet-architecture/eShopOnWeb.git', branch: 'main' // WORKING REPO
+                // git url: 'https://github.com/hugopanel/eshoponweb-testfails.git', branch: 'main' // FAILING REPO (same repo, with one failing test)
                 script{
                     slackSend color: 'good', message: "Checkout completed"
+                }
+            }
+        }
+
+        stage('Test Project') {
+            steps {
+                script {
+                    def sdkImage = 'mcr.microsoft.com/dotnet/sdk:8.0'
+                    def exitCode = sh(script: "docker run -v /var/jenkins_temp/my-pipeline-job:/app --name test-container ${sdkImage} /bin/sh -c 'dotnet test /app/eShopOnWeb.sln'", returnStatus: true)
+                    if (exitCode != 0) {
+                        currentBuild.result = 'FAILURE'
+                        error 'Tests failed. Aborting build.'
+                    }
                 }
             }
         }
@@ -66,6 +80,9 @@ pipeline {
     post { // 
         always {
             script {
+                sh 'docker stop test-container'
+                sh 'docker rm test-container'
+                
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'
                 
                 // Envoi de la notification Slack

@@ -1,0 +1,30 @@
+services:
+  eshopwebmvc:
+    image: localhost:5001/eshopwebmvc:latest
+    ports:
+      - "5108:80"  # Adjust this port mapping as necessary
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - sqlserver
+    volumes:
+      - /var/www/html/src:/var/www/html/src
+
+  eshoppublicapi:
+    image: localhost:5001/eshoppublicapi:latest
+    ports:
+      - "5109:80"  # Adjust this port mapping as necessary
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - sqlserver
+    volumes:
+      - /var/www/html/src:/var/www/html/src
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"

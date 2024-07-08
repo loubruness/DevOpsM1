@@ -1,0 +1,31 @@
+FROM ubuntu:latest
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y \
+        curl \
+        sudo \
+        lsb-release \
+        apt-transport-https \
+        ca-certificates \
+        software-properties-common
+
+# Install Docker
+RUN curl -fsSL https://get.docker.com | sh
+
+# Install Docker Compose
+RUN curl -L "https://github.com/docker/compose/releases/download/2.21.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+# Verify Docker and Docker Compose installation
+RUN docker --version && docker compose --version
+
+RUN mkdir -p /var/www/html/src
+RUN mkdir -p /var/www/html
+RUN mkdir -p /var/www/html/src/PublicApi
+RUN mkdir -p /var/www/html/src/Web
+
+COPY docker-compose-jenkins.yml /var/www/html/docker-compose.yml
+
+# Set up any other necessary configurations or tools
+CMD ["tail", "-f", "/dev/null"]  # Placeholder command to keep the container running

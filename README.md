@@ -30,6 +30,8 @@ We decided to take this github as an example application to build, test and depl
 So when you run the pipeline, it will build images taken from this application, push them to the local registry, execute the test of the application and finally deploy it in a distinct docker-compose that will represent your final-server. You should be able to access it on the port 5107 of your host machine.
 
 ### Stop command:
-To stop the running containers, you can simply execute the following command in your root repository :
+To stop the running containers, you need to do Ctrl + C in the terminal you used to execute the ``docker-compose up`` command.
+
+To delete the containers, you can execute the following command in your root repository :
 ``docker-compose down``
 

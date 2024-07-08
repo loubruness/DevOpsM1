@@ -36,16 +36,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  final-server:
-    image: ubuntu:latest
-    container_name: final-server
-    volumes:
-      - final_server_deploy:/var/www/html
-    depends_on:
-      - jenkins-master
-    networks:
-      - jenkins
-
   registry:
     image: registry:2
     container_name: private_registry

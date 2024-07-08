@@ -2,7 +2,7 @@
 
 - Generate an ssh key from the directory in which the docker-compose file is usign the following command in a terminal (you have to create the directory .ssh if it doesn't already exist).
   ``ssh-keygen -f .ssh/id_rsa``
-- Replace the value of 'JENKINS_AGENT_SSH_PUBKEY' in the docker-compose.yml file by the ssh key generated in the file 'id_rsa.pub' (all the quotes, even the = user@)
+- Replace the value of 'JENKINS_AGENT_SSH_PUBKEY' in the docker-compose.yml file by the ssh key generated in the file 'id_rsa.pub' (all the quotes, even the = user@Desktop-WHATEVER)
 
 ### Start command:
 In the root repository (where the docker-compose.yml file is) :

@@ -11,7 +11,7 @@ services:
     networks:
       - jenkins
     environment:
-      - SLACK_SECRET_TOKEN=xoxb-7350845836756-7348539158866-9RTJTHRJl4EWWCVFSRFZF56z
+      - SLACK_SECRET_TOKEN=
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
@@ -29,7 +29,7 @@ services:
     ports:
       - "22:22"
     environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDV/9LSE2plFt0H3AFMlRPKlS0dXEnBeq8lHl/jy/yHxu1SsFoUwYTLpbwoOmiWI1UxF7R/KDU4sy7mNJsS+Q1UMsAI5mdUI88+n3SpL3VDrsj5pp7PjQfLu2zQNMB4tJROr+0Pj9Fu977m+IdzyIBcyQd22WG6SQMYOahrnvL2N3INx+F/4pE7RjCarv0BryFfk85kVkRtFil3+Bd2rV9XZK3rGhMcRB1ovortTWQLFkiyEEl0TP+TCI6+ikXVmsXrNoY3oj5YENSiyw1Tof9n9rtq+vhmVlpH8KGkj7tJUgRM1iIP+f62jzrk8iMaZE8v40xcoPTF5RO2WTWQ4yGoVpeNtQewJCN3i/qR2HxzpywO/xhOCq35xAVkPSTdARHnzUHApcxHRNe6FYnkgdFPKgvRn4hKf4hWhbu2wxP62x8rTDkXwPX23jYNSuLBZIYDSNlkpSdjSWwaw/X80VislIsgNs+GYREddrQHeHXvgL27DV5IFjNW3AWr8DW6M5U= pauli@DESKTOP-PRG4B1I
+      - JENKINS_AGENT_SSH_PUBKEY=
     networks:
       - jenkins
     restart: always
@@ -37,10 +37,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   final-server:
-    image: ubuntu:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-final-server
+    image: final-server-image
     container_name: final-server
+    command: ["tail", "-f", "/dev/null"]
     volumes:
       - final_server_deploy:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - jenkins-master
     networks:

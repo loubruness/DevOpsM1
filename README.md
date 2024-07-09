@@ -1,6 +1,6 @@
 ### Pre-requisites:
 
-- Generate an ssh key from the directory in which the docker-compose file is usign the following command in a terminal (you have to create the directory .ssh if it doesn't already exist).
+- Generate an ssh key from the directory in which the docker-compose file is using the following command in a terminal (you have to create the directory .ssh if it doesn't already exist).
   ``ssh-keygen -f .ssh/id_rsa``
 - Replace the value of 'JENKINS_AGENT_SSH_PUBKEY' in the docker-compose.yml file by the ssh key generated in the file 'id_rsa.pub' (all the content of the file without quotes, even the = user@Desktop-WHATEVER)
 
@@ -33,7 +33,7 @@ As you arrive on the homepage you can find your pipeline job already configured 
 ![image](https://github.com/loubruness/DevOpsM1/assets/94390007/ff8e0af2-2bf4-40da-8cd5-699aafb9dab8)
 
 We decided to take this github as an example application to build, test and deploy : https://github.com/dotnet-architecture/eShopOnWeb.git
-So when you run the pipeline, it will build images taken from this application, push them to the local registry, execute the test of the application and finally deploy it in a distinct docker-compose that will represent your final-server. You should be able to access it on the port 5106 of your host machine.
+So when you run the pipeline, it will build images taken from this application, push them to the local registry, execute the test of the application and finally deploy it in a distinct docker-compose that will represent your final-server (all these steps will be explained in details in the next section). You should be able to access it on the port 5106 of your host machine.
 
 ### Stages of the pipeline
 

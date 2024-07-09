@@ -11,7 +11,7 @@ services:
     networks:
       - jenkins
     environment:
-      - SLACK_SECRET_TOKEN=xoxb-7350845836756-7364654862803-T3pT33PXuBh1hpXOtDIB6TZf
+      - SLACK_SECRET_TOKEN=
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
@@ -29,12 +29,13 @@ services:
     ports:
       - "22:22"
     environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDjh9iBvqQnLaySlV+m3p70CgJJl/XeAA5dGKsbdNrRZTRRGwag6zs2tOG3iMqsMPlEe7UMqvH9/rQnd/vyg124hcpCmdg8AXDnDS/LQuCRhIqMosfwOunDH+SJcDdqyIWsmkRS4Lib8+hRh20tW5orTFIlpy5fockVNGV1t9E1dB8zKfK4ljlTTv6+r7LCyVq0gpk4C3CNmRBre0cyKuptrLiHxR7Qo2vFtlzRfk3cw/VEEIXh2TX84AegIGJbfT4994dBAYNg53fjHeDTvQ08kp/UKjnCQnN3VW9Td41XPWDX88SViADZjtTQ8PsrF14lN9mhj1RYPDWWpKasdYgHrfl3AQuvA4iTRV8ku6uYhQYtmFSf6NbGnTKGtxlwTas0HjW/76uqo2/3EYFKnBHOTsQGXRMq8CCiJ1zK1BSdRxE9bJUUBFsPCijUdOZMXWoQxAD9C4aa35iimV8VUJjmHaDLa3TNpKHTbPLTxXQwk//zloCF0zpjLwut1WPxJmE= arthur@PC_Portable_Art
+      - JENKINS_AGENT_SSH_PUBKEY=
     networks:
       - jenkins
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - jenkins_temps:/home/jenkins/workspace
 
   registry:
     image: registry:2
@@ -54,6 +55,6 @@ networks:
 volumes:
   jenkins-data:
   jenkins-docker-certs:
-  final_server_deploy:
   agent_workdir:
   registry_data:
+  jenkins_temps:

@@ -11,6 +11,9 @@ RUN apt-get update && \
 RUN apt-get install -y sudo && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+    
+RUN mkdir -p /home/jenkins/workspace && chown -R jenkins:jenkins /home/jenkins
+
 # Add jenkins user to the docker group
 # RUN groupadd -f docker && usermod -aG docker jenkins
 RUN usermod -aG docker jenkins

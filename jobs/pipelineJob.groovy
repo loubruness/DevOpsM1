@@ -39,6 +39,24 @@ pipeline {
             }
         }
 
+        stage('Test Project') {
+            steps {
+                script {
+                    // Define the Docker image
+                    def sdkImage = 'mcr.microsoft.com/dotnet/sdk:8.0'
+                    // Run the container with the specified volume
+                    def exitCode = sh(script: "docker run -v devopsm1_jenkins_temps:/app --name test-container ${sdkImage} /bin/sh -c 'dotnet test /app/my-pipeline-job/eShopOnWeb.sln'", returnStatus: true)
+
+                    // Check exit code and handle failure
+                    if (exitCode != 0) {
+                        currentBuild.result = 'FAILURE'
+                        error 'Tests failed. Aborting build.'
+                    }
+                    slackSend color: 'good', message: "Tests passed"
+                }
+            }
+        }
+
         stage('Push Image to Registry') {
             steps {
                 script {
@@ -67,6 +85,7 @@ pipeline {
                         // Deploy the application using Docker Compose
                         sh 'docker compose up -d'
                     }
+                    slackSend color: 'good', message: "Application deployed on link http://localhost:5106"
                 }
             }
         }
@@ -75,11 +94,13 @@ pipeline {
     post { // 
         always {
             script {
+                sh 'docker stop test-container'
+                sh 'docker rm test-container'
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'
                 
                 // Envoi de la notification Slack
-                slackSend color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger', message: "Pipeline ${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) on agent '${env.NODE_NAME}'"
-                
+                slackSend color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger', message: "Pipeline finished: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) on agent '${env.NODE_NAME}'"
+
                 // Autres actions à effectuer après l'exécution de la pipeline
                 echo 'Pipeline finished!'
             }

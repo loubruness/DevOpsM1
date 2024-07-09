@@ -3,7 +3,8 @@
 - Generate an ssh key from the directory in which the docker-compose file is usign the following command in a terminal (you have to create the directory .ssh if it doesn't already exist).
   ``ssh-keygen -f .ssh/id_rsa``
 - Replace the value of 'JENKINS_AGENT_SSH_PUBKEY' in the docker-compose.yml file by the ssh key generated in the file 'id_rsa.pub' (all the content of the file without quotes, even the = user@Desktop-WHATEVER)
-For slack notifications :
+
+- For slack notifications :
 * If you want to use your own bot in your own Slack channel, please follow the part "Creating your app" of this tutorial : https://plugins.jenkins.io/slack/ and replace the value of 'SLACK_SECRET_TOKEN' at the line 14 of the docker-compose.yml file by the 'Bot User OAuth Access Token' you'll get at the step 8.
 * Else, if you want to test the Slack notifications without having to create your own bot, you may join this workspace : https://join.slack.com/t/devopsm1efrei/shared_invite/zt-2mdg2sw3n-VoRCBS6k5Dld~_zzvhA4mQ . Replace the value of 'SLACK_SECRET_TOKEN' at the line 14 of the docker-compose.yml file by ``xoxb-7350845836756-7397050358100-bvjpyeQmtgHXGqD4dhwV2LvG`` and witness the notifications sent in the #projet-jenkins channel.
 - Launch Docker Desktop

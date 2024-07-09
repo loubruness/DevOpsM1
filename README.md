@@ -62,6 +62,8 @@ We can access the front on our local machine once we have run the pipeline at th
 This should redirect to this page :
 ![image](https://github.com/loubruness/DevOpsM1/assets/94390007/6b60e3af-4e89-4723-8fe8-11cbc8fdfc7e)
 
+#### Post
+At the end of the pipeline, the docker test-container is stopped and deleted. A final Slack notification is sent to inform that the job is finished and the outcome (success or failure).
 
 ### Stop command:
 To stop the running containers, you need to do Ctrl + C in the terminal you used to execute the ``docker-compose up`` command.

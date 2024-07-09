@@ -48,7 +48,7 @@ In this stage, we execute the docker compose build command in the jenkins-agent.
 #### Tests
 In this stage, we start by creating a container specially for running the tests. To do so, we use the image 'mcr.microsoft.com/dotnet/sdk:8.0' to be able to execute the tests of the app we chose. In this container we execute the command ``dotnet test`` that will directly execute the tests present in the 'tests' directory of the git repository.
 We get the exit code of the command and act accordingly : if at least one test failed, we make the result of the pipeline a Failure and abort it. Else, we send a Slack notification to indicate that all the tests have been passed successfully.
-With the actual set up the tests will always pass, if you want to test a pipeline with tests that will fail you may use 
+With the actual set up the tests will always pass, if you want to test a pipeline with tests that will fail you may change the line at the checkout stage for this : ``git url: 'https://github.com/hugopanel/eshoponweb-testfails.git', branch: 'main'``
 
 #### Push Images to Registry
 If the tests passed, we push the images we built earlier inside our local registry (represented by the private_registry container). To do so, we use the ``docker tag`` command to give a tag to the images we built and ``docker push`` to actively push them into the registry. Then, we send a Slack notification to indicate that this stage is completed.

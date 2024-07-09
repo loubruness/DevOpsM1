@@ -3,20 +3,20 @@
 - Generate an ssh key from the directory in which the docker-compose file is usign the following command in a terminal (you have to create the directory .ssh if it doesn't already exist).
   ``ssh-keygen -f .ssh/id_rsa``
 - Replace the value of 'JENKINS_AGENT_SSH_PUBKEY' in the docker-compose.yml file by the ssh key generated in the file 'id_rsa.pub' (all the content of the file without quotes, even the = user@Desktop-WHATEVER)
-- Replace the value of 'SLACK_SECRET_TOKEN' at the line 14 of the docker-compose.yml file to ``xoxb-7350845836756-7397050358100-bvjpyeQmtgHXGqD4dhwV2LvG``
+For slack notifications :
+* If you want to use your own bot in your own Slack channel, please follow the part "Creating your app" of this tutorial : https://plugins.jenkins.io/slack/ and replace the value of 'SLACK_SECRET_TOKEN' at the line 14 of the docker-compose.yml file by the 'Bot User OAuth Access Token' you'll get at the step 8.
+* Else, if you want to test the Slack notifications without having to create your own bot, you may join this workspace : https://join.slack.com/t/devopsm1efrei/shared_invite/zt-2mdg2sw3n-VoRCBS6k5Dld~_zzvhA4mQ . Replace the value of 'SLACK_SECRET_TOKEN' at the line 14 of the docker-compose.yml file by ``xoxb-7350845836756-7397050358100-bvjpyeQmtgHXGqD4dhwV2LvG`` and witness the notifications sent in the #projet-jenkins channel.
 - Launch Docker Desktop
-- If you want to test the Slack notifications without having to create your own bot, you may join this workspace : https://join.slack.com/t/devopsm1efrei/shared_invite/zt-2mdg2sw3n-VoRCBS6k5Dld~_zzvhA4mQ and witness the notifications sent in the #projet-jenkins channel
-  
 
 ### Start command:
 In the root repository (where the docker-compose.yml file is) :
-* To execute without debugging: ``docker-compose up -d``
-* To execute with the build of images (for the first time) : ``docker-compose up --build``
+* To execute with the build of images (for the first time): ``docker-compose up -d --build``
+* To execute in the background: ``docker-compose up -d``
 
 
 ### Access Jenkins:
 Once the containers are up and running, you can access jenkins at the following address : ``localhost:8080``
-If it is your first time, you may have to pass the installation of plugins as they are automaticcaly installed. 
+If it is your first time, you may have to pass the installation of plugins as they are automatically installed. 
 
 Now, you can connect using the following credentials : username = admin, password = admin
 ![image](https://github.com/loubruness/DevOpsM1/assets/94390007/a93cbd51-c240-4739-b2ce-9d7f88383646)
@@ -46,14 +46,15 @@ In this stage, we check out the souce code of the project using the url of the g
 In this stage, we execute the docker compose build command in the jenkins-agent. This will execute the docker-compose.yml file present in the github repository, and will build the images necessary to execute the application. Once again, when the images are built we send a Slack notification.
 
 #### Tests
-In this stage, we start by creating a container specially for running the tests. To do so, we use the image 'mcr.microsoft.com/dotnet/sdk:8.0' to be able to execute the tests of the app we chose. In this container we execute the command ``docker test`` that will directly execute the tests present in the 'tests' directory of the git repository.
+In this stage, we start by creating a container specially for running the tests. To do so, we use the image 'mcr.microsoft.com/dotnet/sdk:8.0' to be able to execute the tests of the app we chose. In this container we execute the command ``dotnet test`` that will directly execute the tests present in the 'tests' directory of the git repository.
 We get the exit code of the command and act accordingly : if at least one test failed, we make the result of the pipeline a Failure and abort it. Else, we send a Slack notification to indicate that all the tests have been passed successfully.
+With the actual set up the tests will always pass, if you want to test a pipeline with tests that will fail you may use 
 
 #### Push Images to Registry
 If the tests passed, we push the images we built earlier inside our local registry (represented by the private_registry container). To do so, we use the ``docker tag`` command to give a tag to the images we built and ``docker push`` to actively push them into the registry. Then, we send a Slack notification to indicate that this stage is completed.
 
 #### Deploy
-Using the local registry in which we just pushed the images, we run the containers by using the command ``docker compose up -d`` (the -d is used to execute it without debugging). 
+Using the local registry in which we just pushed the images, we run the containers by using the command ``docker compose up -d`` (the -d is used to run the containers in the background). Since we are always using the docker socket of the host, docker compose up -d creates new containers on the host for the deployed app. This would have been the same if we executed docker compose up -d in a container that represented our deployment server.
 ![image](https://github.com/loubruness/DevOpsM1/assets/94390007/c7b2f03e-55e4-4bd7-a46a-93930834374c)
 This command creates a distinct network with 3 different containers : eshopwebmvc-1 that contains the front-end of the app and is mapped to the port 5106 of the host machine, eshoppublicapi-1 that contains the API (aka back-end) of the app and is mapped on the port 5200 of the host machine, and sqlserver-1 that contains the database server and is mapped on the port 1433 of the host machine.
 Once this is done, we send a notification to Slack with the link to access the front-end of the app we deployed.
@@ -65,9 +66,7 @@ This should redirect to this page :
 #### Post
 At the end of the pipeline, the docker test-container is stopped and deleted. A final Slack notification is sent to inform that the job is finished and the outcome (success or failure).
 
-### Stop command:
-To stop the running containers, you need to do Ctrl + C in the terminal you used to execute the ``docker-compose up`` command.
-
+### Delete containers command:
 To delete the containers, you can execute the following command in your root repository :
 ``docker-compose down``
 
